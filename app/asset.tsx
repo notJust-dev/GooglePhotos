@@ -1,4 +1,5 @@
 import AntDesign from '@expo/vector-icons/AntDesign';
+import { ResizeMode, Video } from 'expo-av';
 import { Image } from 'expo-image';
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { Text } from 'react-native';
@@ -45,7 +46,19 @@ export default function AssetPage() {
           ),
         }}
       />
-      <Image source={{ uri }} style={{ width: '100%', height: '100%' }} contentFit="contain" />
+      {asset.mediaType === 'photo' ? (
+        <Image source={{ uri }} style={{ width: '100%', height: '100%' }} contentFit="contain" />
+      ) : (
+        <Video
+          style={{ width: '100%', height: '100%' }}
+          source={{
+            uri,
+          }}
+          useNativeControls
+          resizeMode={ResizeMode.CONTAIN}
+          isLooping
+        />
+      )}
     </>
   );
 }

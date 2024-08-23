@@ -64,7 +64,10 @@ export default function MediaContextProvider({ children }: PropsWithChildren) {
       return;
     }
     setLoading(true);
-    const assetsPage = await MediaLibrary.getAssetsAsync({ after: endCursor });
+    const assetsPage = await MediaLibrary.getAssetsAsync({
+      after: endCursor,
+      mediaType: [MediaLibrary.MediaType.photo, MediaLibrary.MediaType.video],
+    });
     // console.log(JSON.stringify(assetsPage, null, 2));
 
     const newAssets = await Promise.all(
@@ -75,8 +78,13 @@ export default function MediaContextProvider({ children }: PropsWithChildren) {
           .select('*', { count: 'exact', head: true })
           .eq('id', asset.id);
 
+        let uri = asset.uri;
+        if (asset.mediaType === 'video') {
+          uri = (await MediaLibrary.getAssetInfoAsync(asset)).localUri;
+        }
         return {
           ...asset,
+          uri,
           isBackedUp: !!count && count > 0,
           isLocalAsset: true,
         };
