@@ -39,7 +39,7 @@ export default function MediaContextProvider({ children }: PropsWithChildren) {
     }
     setLoading(true);
     const assetsPage = await MediaLibrary.getAssetsAsync({ after: endCursor });
-    console.log(JSON.stringify(assetsPage, null, 2));
+    // console.log(JSON.stringify(assetsPage, null, 2));
 
     setLocalAssets((existingItems) => [...existingItems, ...assetsPage.assets]);
 
