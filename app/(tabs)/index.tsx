@@ -1,6 +1,6 @@
 import { Image } from 'expo-image';
-import { Stack } from 'expo-router';
-import { FlatList } from 'react-native';
+import { Link, Stack } from 'expo-router';
+import { FlatList, Pressable } from 'react-native';
 
 import { useMedia } from '~/providers/MediaProvider';
 
@@ -10,6 +10,7 @@ export default function Home() {
   return (
     <>
       <Stack.Screen options={{ title: 'Photos' }} />
+
       <FlatList
         data={assets}
         numColumns={4}
@@ -18,7 +19,11 @@ export default function Home() {
         onEndReached={loadLocalAssets}
         onEndReachedThreshold={1}
         renderItem={({ item }) => (
-          <Image source={{ uri: item.uri }} style={{ width: '25%', aspectRatio: 1 }} />
+          <Link href={`/asset?id=${item.id}`} asChild>
+            <Pressable style={{ width: '25%' }}>
+              <Image source={{ uri: item.uri }} style={{ width: '100%', aspectRatio: 1 }} />
+            </Pressable>
+          </Link>
         )}
       />
     </>

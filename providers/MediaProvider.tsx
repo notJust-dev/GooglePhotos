@@ -4,11 +4,13 @@ import { createContext, PropsWithChildren, useContext, useEffect, useState } fro
 type MediaContextType = {
   assets: MediaLibrary.Asset[];
   loadLocalAssets: () => void;
+  getAssetById: (id: string) => MediaLibrary.Asset | undefined;
 };
 
 const MediaContext = createContext<MediaContextType>({
   assets: [],
   loadLocalAssets: () => {},
+  getAssetById: () => undefined,
 });
 
 export default function MediaContextProvider({ children }: PropsWithChildren) {
@@ -37,7 +39,7 @@ export default function MediaContextProvider({ children }: PropsWithChildren) {
     }
     setLoading(true);
     const assetsPage = await MediaLibrary.getAssetsAsync({ after: endCursor });
-    // console.log(JSON.stringify(assetsPage, null, 2));
+    console.log(JSON.stringify(assetsPage, null, 2));
 
     setLocalAssets((existingItems) => [...existingItems, ...assetsPage.assets]);
 
@@ -46,8 +48,12 @@ export default function MediaContextProvider({ children }: PropsWithChildren) {
     setLoading(false);
   };
 
+  const getAssetById = (id: string) => {
+    return localAssets.find((asset) => asset.id === id);
+  };
+
   return (
-    <MediaContext.Provider value={{ assets: localAssets, loadLocalAssets }}>
+    <MediaContext.Provider value={{ assets: localAssets, loadLocalAssets, getAssetById }}>
       {children}
     </MediaContext.Provider>
   );
