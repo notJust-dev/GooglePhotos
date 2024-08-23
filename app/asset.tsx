@@ -7,7 +7,7 @@ import { useMedia } from '~/providers/MediaProvider';
 
 export default function AssetPage() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { getAssetById } = useMedia();
+  const { getAssetById, syncToCloud } = useMedia();
 
   const asset = getAssetById(id);
 
@@ -20,7 +20,14 @@ export default function AssetPage() {
       <Stack.Screen
         options={{
           title: 'Photo',
-          headerRight: () => <AntDesign name="cloudupload" size={24} color="black" />,
+          headerRight: () => (
+            <AntDesign
+              onPress={() => syncToCloud(asset)}
+              name="cloudupload"
+              size={24}
+              color="black"
+            />
+          ),
         }}
       />
       <Image

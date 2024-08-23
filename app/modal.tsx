@@ -1,7 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import { Button, Platform } from 'react-native';
 
-import { ScreenContent } from '~/components/ScreenContent';
 import { supabase } from '~/utils/supabase';
 
 export default function Modal() {
