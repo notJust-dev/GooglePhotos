@@ -27,6 +27,7 @@
     "expo-status-bar": "~1.12.1",
     "expo-system-ui": "~3.0.4",
     "expo-web-browser": "~13.0.3",
+    "imagekit-javascript": "^3.0.2",
     "mime": "^4.0.4",
     "nativewind": "^4.0.1",
     "react": "18.2.0",
