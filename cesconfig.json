@@ -1,0 +1,39 @@
+{
+  "cesVersion": "2.11.19",
+  "projectName": "GooglePhotos",
+  "packages": [
+    {
+      "name": "expo-router",
+      "type": "navigation",
+      "options": {
+        "type": "tabs"
+      }
+    },
+    {
+      "name": "nativewind",
+      "type": "styling"
+    },
+    {
+      "name": "supabase",
+      "type": "authentication"
+    }
+  ],
+  "flags": {
+    "noGit": false,
+    "noInstall": false,
+    "overwrite": false,
+    "importAlias": true,
+    "packageManager": "npm",
+    "eas": false
+  },
+  "packageManager": {
+    "type": "npm",
+    "version": "10.8.2"
+  },
+  "os": {
+    "type": "Darwin",
+    "platform": "darwin",
+    "arch": "arm64",
+    "kernelVersion": "24.0.0"
+  }
+}
