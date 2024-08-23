@@ -18,12 +18,17 @@ export default function AssetPage() {
     return <Text>Asset not found!</Text>;
   }
 
-  const uri = getImagekitUrlFromPath('72768a4f-3db5-4b31-bb23-236f61997dc7/IMG_0082.JPG', [
-    { width: 200, height: 200 },
-    {
-      raw: 'l-text,i-notJust.dev,co-ffffff,fs-30,l-end',
-    },
-  ]);
+  let uri;
+  if (asset.isLocalAsset) {
+    uri = asset.uri;
+  } else {
+    uri = getImagekitUrlFromPath(asset.path, [
+      { width: 500 },
+      // {
+      //   raw: 'l-text,i-notJust.dev,co-ffffff,fs-30,l-end',
+      // },
+    ]);
+  }
 
   return (
     <>

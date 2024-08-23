@@ -30,7 +30,15 @@ export default function MediaContextProvider({ children }: PropsWithChildren) {
   const [endCursor, setEndCursor] = useState<string>();
   const [loading, setLoading] = useState(false);
 
+  const [remoteAssets, setRemoteAssets] = useState([]);
+
+  const assets = [...remoteAssets, ...localAssets.filter((assets) => !assets.isBackedUp)];
+
   const { user } = useAuth();
+
+  useEffect(() => {
+    loadRemoteAssets();
+  }, []);
 
   useEffect(() => {
     if (permissionResponse?.status !== 'granted') {
@@ -44,6 +52,13 @@ export default function MediaContextProvider({ children }: PropsWithChildren) {
     }
   }, [permissionResponse]);
 
+  const loadRemoteAssets = async () => {
+    const { data, error } = await supabase.from('assets').select('*');
+    setRemoteAssets(data);
+    console.log('remote');
+    console.log(data);
+  };
+
   const loadLocalAssets = async () => {
     if (loading || !hasNextPage) {
       return;
@@ -52,7 +67,23 @@ export default function MediaContextProvider({ children }: PropsWithChildren) {
     const assetsPage = await MediaLibrary.getAssetsAsync({ after: endCursor });
     // console.log(JSON.stringify(assetsPage, null, 2));
 
-    setLocalAssets((existingItems) => [...existingItems, ...assetsPage.assets]);
+    const newAssets = await Promise.all(
+      assetsPage.assets.map(async (asset) => {
+        // check if asset is already backed up
+        const { count } = await supabase
+          .from('assets')
+          .select('*', { count: 'exact', head: true })
+          .eq('id', asset.id);
+
+        return {
+          ...asset,
+          isBackedUp: !!count && count > 0,
+          isLocalAsset: true,
+        };
+      })
+    );
+
+    setLocalAssets((existingItems) => [...existingItems, ...newAssets]);
 
     setHasNextPage(assetsPage.hasNextPage);
     setEndCursor(assetsPage.endCursor);
@@ -60,7 +91,7 @@ export default function MediaContextProvider({ children }: PropsWithChildren) {
   };
 
   const getAssetById = (id: string) => {
-    return localAssets.find((asset) => asset.id === id);
+    return assets.find((asset) => asset.id === id);
   };
 
   const syncToCloud = async (asset: MediaLibrary.Asset) => {
@@ -81,20 +112,23 @@ export default function MediaContextProvider({ children }: PropsWithChildren) {
         upsert: true,
       });
     if (storedFile) {
-      const { data, error } = await supabase.from('assets').upsert({
-        id: asset.id,
-        path: storedFile.path,
-        user_id: user.id,
-        mediaType: asset.mediaType,
-        object_id: storedFile.id,
-      });
+      const { data, error } = await supabase
+        .from('assets')
+        .upsert({
+          id: asset.id,
+          path: storedFile.path,
+          user_id: user.id,
+          mediaType: asset.mediaType,
+          object_id: storedFile.id,
+        })
+        .select()
+        .single();
       console.log(data, error);
     }
   };
 
   return (
-    <MediaContext.Provider
-      value={{ assets: localAssets, loadLocalAssets, getAssetById, syncToCloud }}>
+    <MediaContext.Provider value={{ assets, loadLocalAssets, getAssetById, syncToCloud }}>
       {children}
     </MediaContext.Provider>
   );
